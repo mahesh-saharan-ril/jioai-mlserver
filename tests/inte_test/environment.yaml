@@ -1,0 +1,15 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - make
+  - pip
+  - cudatoolkit=11.2
+  - cudnn=8.1.0
+  - pip:
+    - --index-url=https://pypi.org/simple
+    - --trusted-host=pypi.org
+    - --trusted-host=devopsartifact.jio.com
+    - --extra-index-url=${PIP_EXTRA_INDEX_URL}
+    - -r requirements.txt

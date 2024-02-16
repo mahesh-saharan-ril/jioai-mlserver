@@ -1,0 +1,31 @@
+{
+  "name": "jioai-mlserver",
+  "dockerComposeFile": "docker-compose.yaml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "context": "..",
+  "dockerFile": "Dockerfile",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "python.pythonPath": "/usr/local/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintPath": "/usr/local/share/pip-global/bin/pylint"
+  },
+  "appPort": [
+    8080
+  ],
+  "postCreateCommand": "echo done",
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "PIP_EXTRA_INDEX_URL": "${localEnv:PIP_EXTRA_INDEX_URL}",
+    "PYTHONDONTWRITEBYTECODE": "true"
+  },
+  "remoteEnv": {
+    "PIP_EXTRA_INDEX_URL": "${localEnv:PIP_EXTRA_INDEX_URL}",
+    "PYTHONDONTWRITEBYTECODE": "true"
+  },
+  "extensions": [
+    "ms-python.python"
+  ]
+}

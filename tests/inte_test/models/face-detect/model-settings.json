@@ -1,0 +1,6 @@
+{
+    "name": "face-detect",
+    "implementation": "models.FaceDetectModel",
+    "max_batch_size": 4,
+    "max_batch_time": 5
+}

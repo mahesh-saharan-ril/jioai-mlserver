@@ -1,0 +1,90 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - dev
+
+jobs:
+- job: DockerLogin
+  displayName: Docker Login
+
+  pool:
+    name: 'agent140'
+
+  variables:
+  - group: 'Build Configuration Group'
+
+  steps:
+  - script: make docker-login
+    displayName: 'Docker Login'
+    env:
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)   
+      AICR_DOCKER_REPO: $(AICR_DOCKER_REPO)
+      AICR_DOCKER_USERNAME: $(AICR_DOCKER_USERNAME)
+      AICR_DOCKER_PASSWORD: $(AICR_DOCKER_PASSWORD)
+      CONTAINER_REGISTRY_TYPE: azure-aicr
+
+  - script: make devel-get
+    displayName: 'Fetch Devel Docker Image'
+    env:
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)  
+      AICR_DOCKER_REPO: $(AICR_DOCKER_REPO)
+      AICR_DOCKER_USERNAME: $(AICR_DOCKER_USERNAME)
+      AICR_DOCKER_PASSWORD: $(AICR_DOCKER_PASSWORD)
+      CONTAINER_REGISTRY_TYPE: azure-aicr
+
+- job: BuildAndTest
+  displayName: Build and Test
+  dependsOn: DockerLogin
+  condition: succeeded()
+
+  pool:
+    name: 'agent140'
+
+  variables:
+  - group: 'Build Configuration Group'
+
+  steps:
+  - script: make package
+    displayName: 'Package/Buid artifacts'
+    env:
+      http_proxy: $(PROXY_HTTP)
+      https_proxy: $(PROXY_HTTPS)
+      no_proxy: $(PROXY_NO)
+      APP_BUILD_ENV: dev
+      PIP_EXTRA_INDEX_TRUSTED_HOST: $(PIP_EXTRA_INDEX_TRUSTED_HOST)
+      PIP_EXTRA_INDEX_URL: $(PIP_EXTRA_INDEX_URL)
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PROJECT_PATH: $(DOCKER_PROJECT_PATH)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+
+  - script: make publish
+    displayName: 'Publish artifacts'
+    env:
+      http_proxy: $(PROXY_HTTP)
+      https_proxy: $(PROXY_HTTPS)
+      no_proxy: $(PROXY_NO)
+      APP_BUILD_ENV: dev
+      PIP_EXTRA_INDEX_TRUSTED_HOST: $(PIP_EXTRA_INDEX_TRUSTED_HOST)
+      PIP_EXTRA_INDEX_URL: $(PIP_EXTRA_INDEX_URL)
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PROJECT_PATH: $(DOCKER_PROJECT_PATH)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+      TWINE_UPLOAD_REPOSITORY_URL: $(TWINE_UPLOAD_REPOSITORY_URL)
+      TWINE_UPLOAD_REPOSITORY: $(TWINE_UPLOAD_REPOSITORY)
+      TWINE_UPLOAD_USERNAME: $(TWINE_UPLOAD_USERNAME)
+      TWINE_UPLOAD_PASSWORD: $(TWINE_UPLOAD_PASSWORD)
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: VERSION'
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/VERSION'
+      artifactName: drop-build-repo-version

@@ -1,0 +1,92 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - Makefile
+    - Makefile.core
+    - hack/*
+    - environment.yaml
+    - requirements/*
+    - setup.py
+    - setup.cfg
+    - Dockerfile
+    - .dockerignore
+    - ci/jiodevops/devel-image-build-pipeline.yaml
+
+jobs:
+- job: BuildBaseImage
+  displayName: Base Image Builder
+
+  pool:
+    name: 'agent140'
+
+  variables:
+  - group: 'Build Configuration Group'
+
+  steps:
+  - script: make docker-login
+    displayName: 'Docker Login'
+    env:
+      http_proxy: $(PROXY_HTTP)
+      https_proxy: $(PROXY_HTTPS)
+      no_proxy: $(PROXY_NO)
+      APP_BUILD_ENV: dev
+      PYPI_FEED: $(PYPI_FEED)
+      PIP_EXTRA_INDEX_TRUSTED_HOST: $(PIP_EXTRA_INDEX_TRUSTED_HOST)
+      PIP_EXTRA_INDEX_URL: $(PIP_EXTRA_INDEX_URL)
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+      AICR_DOCKER_REPO: $(AICR_DOCKER_REPO)
+      AICR_DOCKER_USERNAME: $(AICR_DOCKER_USERNAME)
+      AICR_DOCKER_PASSWORD: $(AICR_DOCKER_PASSWORD)
+      AICR_DOCKER_NAMESPACE_PREFIX: $(AICR_DOCKER_NAMESPACE_PREFIX)
+      AICR_DOCKER_NAMESPACE: $(AICR_DOCKER_NAMESPACE)
+      CONTAINER_REGISTRY_TYPE: azure-aicr
+
+  - script: make devel-package
+    displayName: 'Package devel docker image'
+    env:
+      http_proxy: $(PROXY_HTTP)
+      https_proxy: $(PROXY_HTTPS)
+      no_proxy: $(PROXY_NO)
+      APP_BUILD_ENV: dev
+      PYPI_FEED: $(PYPI_FEED)
+      PIP_EXTRA_INDEX_TRUSTED_HOST: $(PIP_EXTRA_INDEX_TRUSTED_HOST)
+      PIP_EXTRA_INDEX_URL: $(PIP_EXTRA_INDEX_URL)
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+      AICR_DOCKER_REPO: $(AICR_DOCKER_REPO)
+      AICR_DOCKER_USERNAME: $(AICR_DOCKER_USERNAME)
+      AICR_DOCKER_PASSWORD: $(AICR_DOCKER_PASSWORD)
+      AICR_DOCKER_NAMESPACE_PREFIX: $(AICR_DOCKER_NAMESPACE_PREFIX)
+      AICR_DOCKER_NAMESPACE: $(AICR_DOCKER_NAMESPACE)
+      CONTAINER_REGISTRY_TYPE: azure-aicr
+
+  - script: make devel-publish
+    displayName: 'Publish devel docker image'
+    env:
+      http_proxy: $(PROXY_HTTP)
+      https_proxy: $(PROXY_HTTPS)
+      no_proxy: $(PROXY_NO)
+      APP_BUILD_ENV: dev
+      PYPI_FEED: $(PYPI_FEED)
+      PIP_EXTRA_INDEX_TRUSTED_HOST: $(PIP_EXTRA_INDEX_TRUSTED_HOST)
+      PIP_EXTRA_INDEX_URL: $(PIP_EXTRA_INDEX_URL)
+      DOCKER_REPO: $(DOCKER_REPO)
+      DOCKER_USERNAME: $(DOCKER_USERNAME)
+      DOCKER_PASSWORD: $(DOCKER_PASSWORD)
+      AICR_DOCKER_REPO: $(AICR_DOCKER_REPO)
+      AICR_DOCKER_USERNAME: $(AICR_DOCKER_USERNAME)
+      AICR_DOCKER_PASSWORD: $(AICR_DOCKER_PASSWORD)
+      AICR_DOCKER_NAMESPACE_PREFIX: $(AICR_DOCKER_NAMESPACE_PREFIX)
+      AICR_DOCKER_NAMESPACE: $(AICR_DOCKER_NAMESPACE)
+      CONTAINER_REGISTRY_TYPE: azure-aicr
