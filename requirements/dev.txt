@@ -22,7 +22,7 @@ aiohttp-retry==2.8.3
 ## Used for FastAPI Async testing
 httpx==0.23.0
 kafka-python==2.0.2
-tenacity==8.1.0
+tenacity==8.2.3
 
 # Linting and formatting
 flake8==5.0.4
