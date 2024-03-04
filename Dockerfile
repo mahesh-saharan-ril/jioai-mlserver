@@ -15,7 +15,7 @@ RUN ./hack/build-wheels.sh /opt/mlserver/dist
 
 #RUN file="$(ls /opt/mlserver/dist)" && echo $file
 
-FROM nvidia/cuda:11.2.2-base-ubi8
+FROM nvidia/cuda:12.3.2-base-ubi8
 SHELL ["/bin/bash", "-c"]
 
 ARG PYTHON_VERSION=3.8.13
